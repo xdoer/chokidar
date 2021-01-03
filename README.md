@@ -10,7 +10,7 @@ new WebPackPluginChokidar({
       opt: { persistent: true, ignoreInitial: true },
       actions: {
         on: {
-          add: (_, path) => {
+          add: ({ compiler, compilation, watcher }, path) => {
             console.log(`File ${path} has been added`);
           },
         },
