@@ -1,4 +1,4 @@
-# Webpack-plugin-Chokidar
+# webpack-plugin-chokidar
 
 ## eg
 

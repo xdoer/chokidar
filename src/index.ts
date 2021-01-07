@@ -1,42 +1,53 @@
-const chokidar = require('chokidar');
+import { watch } from 'chokidar'
+import { PluginOption, ChokidarEvent, ChokidarPluginFileEvent } from './types'
 
 class ChokidarPlugin {
-  options: any;
-  isListening: any;
+  options: PluginOption
+  PluginName: string
+  listening: boolean
 
-  constructor(options: any) {
-    this.options = options;
-    this.isListening = false;
+  constructor(options: PluginOption) {
+    this.PluginName = 'ChokidarPlugin'
+    this.options = options
+    this.listening = false
   }
 
   apply(compiler: any) {
-    compiler.hooks.done.tapAsync(
-      'ChokidarPlugin',
+    compiler.hooks.watchRun.tapAsync(
+      this.PluginName,
       (compilation: any, callback: any) => {
-        if (this.isListening) return callback();
+        if (this.listening) return
 
-        this.isListening = true;
+        const { chokidarConfigList = [] } = this.options
 
-        const { chokidarConfigList = [] } = this.options;
+        for (let { file, opt, actions } of chokidarConfigList) {
+          // ignore watch when no actions provide
+          if (!actions || !Object.keys(actions).length) continue
 
-        chokidarConfigList.forEach((item: any) => {
-          const { file, opt, actions = {} } = item;
+          // create watch instance
+          const watcher = watch(file, opt)
 
-          const watcher = chokidar.watch(file, opt);
+          // add listener
+          Object.entries(actions).forEach((action) => {
+            const [listen, cbs]: [
+              keyof ChokidarEvent,
+              Partial<ChokidarPluginFileEvent>
+            ] = action as any
 
-          Object.entries(actions).forEach(([listen, cbs]) => {
-            Object.entries(cbs as any).forEach(([name, cb]) => {
-              watcher[listen](name, (...args: any) =>
-                (cb as any)({ compiler, compilation, watcher }, ...args)
-              );
-            });
-          });
-        });
+            Object.entries(cbs).forEach(([name, cb]) =>
+              watcher![listen](name, (...args) =>
+                (cb as any)!({ compiler, compilation, watcher }, ...args)
+              )
+            )
+          })
+        }
 
-        callback();
+        this.listening = true
+
+        callback()
       }
-    );
+    )
   }
 }
 
-module.exports = ChokidarPlugin;
+module.exports = ChokidarPlugin
