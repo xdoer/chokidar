@@ -16,7 +16,7 @@ class ChokidarPlugin {
     compiler.hooks.watchRun.tapAsync(
       this.PluginName,
       (compilation: any, callback: any) => {
-        if (this.listening) return
+        if (this.listening) return callback()
 
         const { chokidarConfigList = [] } = this.options
 
