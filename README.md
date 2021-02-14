@@ -1,6 +1,6 @@
 # webpack-plugin-chokidar
 
-可以让 webpack 不处于依赖图中的文件的变动。
+可以让 webpack 监听不处于依赖图中的文件的变动。
 
 ## 简介
 
