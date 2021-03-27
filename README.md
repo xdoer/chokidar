@@ -1,20 +1,36 @@
 # webpack-plugin-chokidar
 
-可以让 webpack 监听不处于依赖图中的文件的变动。
+let webpack monitor changes in files that are not in the dependency graph.
 
-## 简介
+## Docs
 
-众所周知，Webpack 只能监听处于文件依赖图的文件的变动，当新建一个文件时，是没有办法监听到的。
+[English]('./README.md) | [中文]('./README_zh.md')
 
-`webpack-plugin-chokidar` 是一个可以让 Webpack 可以监听不处于依赖图中的文件的变动，通过回调函数，你可以做任何你想做的事情。它集成了[chokidar](https://github.com/paulmillr/chokidar)，使用时只需要传入一份配置即可。
+## Foreword
 
-## 案例
+Those who have used the [umi framework](https://umijs.org/docs/routing) must be impressed with its conventional routing function. You only need to create a new file in the page folder without any configuration, and you can jump directly to this page. The implementation principle is actually very simple. You only need to monitor the addition and deletion of files in the page folder, and run the script to update the routing table files.
 
-使用该插件，可以实现类似 [umi](https://umijs.org/zh-CN/docs/convention-routing)约定式路由的设计。在监听到文件创建时，运行修改路由文件脚本，可触发 webpack 重新编译。
+But as we all know, Webpack can only monitor the changes of files in the file dependency graph. When a file that is not in the dependency graph is created, modified, or deleted, there is no way to monitor it.
 
-我在 Taro 小程序中，配合该插件实现了 umi 约定式路由的功能[generated-plugin-taro-router-service](https://github.com/LuckyHH/generated-plugin-taro-router-service)。
+`webpack-plugin-chokidar` is a tool that allows Webpack to monitor changes in files that are not in the dependency graph. In the callback function, you can execute your automation script. It integrates [chokidar](https://github.com/paulmillr/chokidar), redesigns its API, and only needs to pass in a configuration when using it.
 
-## 使用示例
+## Install
+
+```bash
+npm i webpack-plugin-chokidar -D
+```
+
+## Config
+
+| Item    | Type                          | Mapping                                                        | Meaning                           |
+| ------- | ----------------------------- | -------------------------------------------------------------- | --------------------------------- |
+| file    | string                        | chokidar.watch(**file**, opt)                                  | The file or dir you want to watch |
+| opt     | [WatchOptions](src/types.ts)  | chokidar.watch(file, **opt**)                                  | watch options                     |
+| actions | [ChokidarEvent](src/types.ts) | watcher['on' \| 'close' \| 'add' \| 'unwatch' \| 'getWatched'] | watch callback                    |
+
+You can check the [type file](./src/types.ts) and [chokidar document](https://github.com/paulmillr/chokidar#api) to see more detailed configuration
+
+## Demo
 
 ```js
 new WebPackPluginChokidar({
@@ -25,29 +41,11 @@ new WebPackPluginChokidar({
       actions: {
         on: {
           add: ({ compiler, compilation, watcher }, path) => {
-            console.log(`File ${path} has been added`);
+            console.log(`File ${path} has been added`)
           },
         },
       },
     },
   ],
-});
+})
 ```
-
-## 配置
-
-插件只需要传入一个 `chokidarConfigList` 配置项即可，该配置项是列表。
-
-列表中每一项包含三个字段
-
->* file。要监听的文件或文件夹
->* opt。监听配置项
->* actions。事件集
-
-对应 chokidar 中的 `chokidar.watch(file, opt)`
-
-actions 中定义了 chokidar 的事件集合。包括 `on`，`close`，`add`，`unwatch` 和 `getWatched`。
-
-`on` 事件中，你可以监听到文件、文件夹的创建、删除，变更等等操作。
-
-你可以查看[类型文件](./src/types.ts)，和[chokidar](https://github.com/paulmillr/chokidar)文档获取更多使用方式。
