@@ -30,7 +30,7 @@ export interface ChokidarEvent {
 }
 
 export interface ChokidarConfig {
-  file: string
+  file: string | ReadonlyArray<string>
   opt: WatchOptions
   actions: ChokidarEvent
 }
