@@ -1,8 +1,14 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "description": "let webpack monitor changes in files that are not in the dependency graph.",
+  "keywords": [
+    "webpack",
+    "chokidar"
+  ],
+  "repository": "https://github.com/LuckyHH/webpack-plugin-chokidar",
   "files": [
     "dist"
   ],
