@@ -4,7 +4,7 @@ let webpack monitor changes in files that are not in the dependency graph.
 
 ## Docs
 
-[English]('./README.md) | [中文]('./README_zh.md')
+[English](README.md) | [中文](README_zh.md)
 
 ## Foreword
 
