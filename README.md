@@ -28,7 +28,7 @@ npm i webpack-plugin-chokidar -D
 | opt     | [WatchOptions](src/types.ts)  | chokidar.watch(file, **opt**)                                  | watch options                     |
 | actions | [ChokidarEvent](src/types.ts) | watcher['on' \| 'close' \| 'add' \| 'unwatch' \| 'getWatched'] | watch callback                    |
 
-You can check the [type file](./src/types.ts) and [chokidar document](https://github.com/paulmillr/chokidar#api) to see more detailed configuration
+You can check the [type file](src/types.ts) and [chokidar document](https://github.com/paulmillr/chokidar#api) to see more detailed configuration
 
 ## Demo
 
