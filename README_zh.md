@@ -28,16 +28,31 @@ npm i webpack-plugin-chokidar -D
 
 ## 使用示例
 
+下面演示一个简单的案例。当监听到 dist 目录有文件变化时，自动上传文件到远程服务器。
+
 ```js
+const shell = require('shelljs')
+const debounce = require('lodash.debounce')
+const path = require('path')
+
+const uploadFileToRemote = debounce(() => {
+  const dirPath = path.resolve(__dirname, '../dist')
+  shell.exec(
+    `sshpass -p "test12345" scp -r ${dirPath} acm@192.168.1.1:/Users/acm/Desktop/spider`
+  )
+}, 1000)
+
+// ...some webpack code
+
 new WebPackPluginChokidar({
   chokidarConfigList: [
     {
-      file: '../src/pages/**/index.tsx',
+      file: '../dist/*',
       opt: { persistent: true, ignoreInitial: true },
       actions: {
         on: {
-          add: ({ compiler, compilation, watcher }, path) => {
-            console.log(`File ${path} has been added`)
+          change: ({ compiler, compilation, watcher }, path) => {
+            uploadFileToRemote()
           },
         },
       },

@@ -30,18 +30,33 @@ npm i webpack-plugin-chokidar -D
 
 You can check the [type file](src/types.ts) and [chokidar document](https://github.com/paulmillr/chokidar#api) to see more detailed configuration
 
-## Demo
+## Example
+
+This is a simple example which can upload file to remote computer when monitor target file is changed.
 
 ```js
+const shell = require('shelljs')
+const debounce = require('lodash.debounce')
+const path = require('path')
+
+const uploadFileToRemote = debounce(() => {
+  const dirPath = path.resolve(__dirname, '../dist')
+  shell.exec(
+    `sshpass -p "test12345" scp -r ${dirPath} acm@192.168.1.1:/Users/acm/Desktop/spider`
+  )
+}, 1000)
+
+// ...some webpack code
+
 new WebPackPluginChokidar({
   chokidarConfigList: [
     {
-      file: '../src/pages/**/index.tsx',
+      file: '../dist/*',
       opt: { persistent: true, ignoreInitial: true },
       actions: {
         on: {
-          add: ({ compiler, compilation, watcher }, path) => {
-            console.log(`File ${path} has been added`)
+          change: ({ compiler, compilation, watcher }, path) => {
+            uploadFileToRemote()
           },
         },
       },
