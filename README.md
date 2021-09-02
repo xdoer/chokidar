@@ -1,38 +1,38 @@
 # webpack-plugin-chokidar
 
-let webpack monitor changes in files that are not in the dependency graph.
+可以让 webpack 监听不处于依赖图中的文件的变动。
 
-## Docs
+## 注意
 
-[English](README.md) | [中文](README_zh.md)
+这个项目是尝试写 webpack 插件，且当时项目需要监听文件夹变动，练手用的，实际 chokidar 并不需要整合到 webpack 插件中。在 index.js 脚本文件中，直接引入 chokidar, 用 node index.js 运行就可以了。
 
-## Foreword
+## 前言
 
-Those who have used the [umi framework](https://umijs.org/docs/routing) must be impressed with its conventional routing function. You only need to create a new file in the page folder without any configuration, and you can jump directly to this page. The implementation principle is actually very simple. You only need to monitor the addition and deletion of files in the page folder, and run the script to update the routing table files.
+使用过 umi 框架的人一定对其**约定式路由**功能印象深刻，你只需要在 `page` 文件夹下新建文件，无需任何配置，在另一个页面就可以直接进行跳转。实现原理其实很简单，只需要监听 `page` 文件夹下的文件新增和删除，运行脚本更新路由表文件即可。
 
-But as we all know, Webpack can only monitor the changes of files in the file dependency graph. When a file that is not in the dependency graph is created, modified, or deleted, there is no way to monitor it.
+但众所周知，Webpack 只能监听处于文件依赖图的文件的变动，当对一个不处于依赖图中的文件进行新建/修改/删除等操作时，是没有办法监听到的。
 
-`webpack-plugin-chokidar` is a tool that allows Webpack to monitor changes in files that are not in the dependency graph. In the callback function, you can execute your automation script. It integrates [chokidar](https://github.com/paulmillr/chokidar), redesigns its API, and only needs to pass in a configuration when using it.
+`webpack-plugin-chokidar` 是一个可以让 Webpack 可以监听不处于依赖图中的文件的变动，在回调函数中，你可以执行你的自动化脚本。它整合了[chokidar](https://github.com/paulmillr/chokidar)，重新设计了其 API，使用时只需要传入一份配置即可。
 
-## Install
+## 安装
 
 ```bash
 npm i webpack-plugin-chokidar -D
 ```
 
-## Config
+## 配置
 
-| Item    | Type                          | Mapping                                                        | Meaning                           |
-| ------- | ----------------------------- | -------------------------------------------------------------- | --------------------------------- |
-| file    | string                        | chokidar.watch(**file**, opt)                                  | The file or dir you want to watch |
-| opt     | [WatchOptions](src/types.ts)  | chokidar.watch(file, **opt**)                                  | watch options                     |
-| actions | [ChokidarEvent](src/types.ts) | watcher['on' \| 'close' \| 'add' \| 'unwatch' \| 'getWatched'] | watch callback                    |
+| 配置项  | 类型                          | 对应                                                           | 含义                       |
+| ------- | ----------------------------- | -------------------------------------------------------------- | -------------------------- |
+| file    | string                        | chokidar.watch(**file**, opt)                                  | 要监听的文件，文件夹，glob |
+| opt     | [WatchOptions](src/types.ts)  | chokidar.watch(file, **opt**)                                  | 监听选项                   |
+| actions | [ChokidarEvent](src/types.ts) | watcher['on' \| 'close' \| 'add' \| 'unwatch' \| 'getWatched'] | 监听回调函数               |
 
-You can check the [type file](src/types.ts) and [chokidar document](https://github.com/paulmillr/chokidar#api) to see more detailed configuration
+你可以查看[类型文件](./src/types.ts)和[chokidar](https://github.com/paulmillr/chokidar#api)文档查看更详细的配置
 
-## Example
+## 使用示例
 
-This is a simple example which can upload file to remote computer when monitor target file is changed.
+下面演示一个简单的案例。当监听到 dist 目录有文件变化时，自动上传文件到远程服务器。
 
 ```js
 const shell = require('shelljs')
@@ -64,3 +64,7 @@ new WebPackPluginChokidar({
   ],
 })
 ```
+
+## 案例
+
+[generated-plugin-taro-router-service](https://github.com/LuckyHH/generated-plugin-taro-router-service)。
