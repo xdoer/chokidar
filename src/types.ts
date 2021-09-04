@@ -25,3 +25,5 @@ export interface Chokidar {
   options?: WatchOptions
   list: ChokidarOption[]
 }
+
+export type ChokidarArgs = Parameters<(config: Chokidar) => Promise<FSWatcher[]>>
