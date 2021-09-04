@@ -1,53 +1,27 @@
-import { watch } from 'chokidar'
-import { PluginOption, ChokidarEvent, ChokidarPluginFileEvent } from './types'
+import { FSWatcher, watch } from 'chokidar'
+import { Chokidar } from './types'
 
-class ChokidarPlugin {
-  options: PluginOption
-  PluginName: string
-  listening: boolean
+export default function (config: Chokidar): Promise<FSWatcher[]> {
+  const { options: watchOptions, list } = config
 
-  constructor(options: PluginOption) {
-    this.PluginName = 'ChokidarPlugin'
-    this.options = options
-    this.listening = false
-  }
+  return new Promise((resolve, reject) => {
 
-  apply(compiler: any) {
-    compiler.hooks.watchRun.tapAsync(
-      this.PluginName,
-      (compilation: any, callback: any) => {
-        if (this.listening) return callback()
+    const watchers = list.map(({ target, options, watch: watchEvent }) => {
 
-        const { chokidarConfigList = [] } = this.options
-
-        for (let { file, opt, actions } of chokidarConfigList) {
-          // ignore watch when no actions provide
-          if (!actions || !Object.keys(actions).length) continue
-
-          // create watch instance
-          const watcher = watch(file, opt)
-
-          // add listener
-          Object.entries(actions).forEach((action) => {
-            const [listen, cbs]: [
-              keyof ChokidarEvent,
-              Partial<ChokidarPluginFileEvent>
-            ] = action as any
-
-            Object.entries(cbs).forEach(([name, cb]) =>
-              watcher![listen](name, (...args) =>
-                (cb as any)!({ compiler, compilation, watcher }, ...args)
-              )
-            )
-          })
-        }
-
-        this.listening = true
-
-        callback()
+      // reject when no watchEvent provide
+      if (!watchEvent || !Object.keys(watchEvent).length) {
+        reject('Please provide actions option')
       }
-    )
-  }
-}
 
-module.exports = ChokidarPlugin
+      // create watch instance
+      const watcher = watch(target, Object.assign({}, watchOptions, options))
+
+      // add listener
+      Object.entries(watchEvent).forEach(([name, cb]) => watcher.on(name, (...args) => (cb as any)(watcher, ...args)))
+
+      return watcher
+    })
+
+    resolve(watchers)
+  })
+}

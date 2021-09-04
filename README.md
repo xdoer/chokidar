@@ -1,70 +1,65 @@
-# webpack-plugin-chokidar
+# Chokidar
 
-可以让 webpack 监听不处于依赖图中的文件的变动。
+This is based on [paulmillr](https://github.com/paulmillr)' [chokidar](https://github.com/paulmillr/chokidar) project which make it easier to use.
 
-## 注意
-
-这个项目是尝试写 webpack 插件，且当时项目需要监听文件夹变动，练手用的，实际 chokidar 并不需要整合到 webpack 插件中。在 index.js 脚本文件中，直接引入 chokidar, 用 node index.js 运行就可以了。
-
-## 前言
-
-使用过 umi 框架的人一定对其**约定式路由**功能印象深刻，你只需要在 `page` 文件夹下新建文件，无需任何配置，在另一个页面就可以直接进行跳转。实现原理其实很简单，只需要监听 `page` 文件夹下的文件新增和删除，运行脚本更新路由表文件即可。
-
-但众所周知，Webpack 只能监听处于文件依赖图的文件的变动，当对一个不处于依赖图中的文件进行新建/修改/删除等操作时，是没有办法监听到的。
-
-`webpack-plugin-chokidar` 是一个可以让 Webpack 可以监听不处于依赖图中的文件的变动，在回调函数中，你可以执行你的自动化脚本。它整合了[chokidar](https://github.com/paulmillr/chokidar)，重新设计了其 API，使用时只需要传入一份配置即可。
-
-## 安装
+## Install
 
 ```bash
-npm i webpack-plugin-chokidar -D
+yarn add @xdoer/chokidar
 ```
 
-## 配置
+## Example
 
-| 配置项  | 类型                          | 对应                                                           | 含义                       |
-| ------- | ----------------------------- | -------------------------------------------------------------- | -------------------------- |
-| file    | string                        | chokidar.watch(**file**, opt)                                  | 要监听的文件，文件夹，glob |
-| opt     | [WatchOptions](src/types.ts)  | chokidar.watch(file, **opt**)                                  | 监听选项                   |
-| actions | [ChokidarEvent](src/types.ts) | watcher['on' \| 'close' \| 'add' \| 'unwatch' \| 'getWatched'] | 监听回调函数               |
+```ts
+import chokidar, { ConfigChokidar } from '@xdoer/chokidar'
 
-你可以查看[类型文件](./src/types.ts)和[chokidar](https://github.com/paulmillr/chokidar#api)文档查看更详细的配置
-
-## 使用示例
-
-下面演示一个简单的案例。当监听到 dist 目录有文件变化时，自动上传文件到远程服务器。
-
-```js
-const shell = require('shelljs')
-const debounce = require('lodash.debounce')
-const path = require('path')
-
-const uploadFileToRemote = debounce(() => {
-  const dirPath = path.resolve(__dirname, '../dist')
-  shell.exec(
-    `sshpass -p "test12345" scp -r ${dirPath} acm@192.168.1.1:/Users/acm/Desktop/spider`
-  )
-}, 1000)
-
-// ...some webpack code
-
-new WebPackPluginChokidar({
-  chokidarConfigList: [
+chokidar({
+  options: { persistent: true, ignoreInitial: true },
+  list: [
     {
-      file: '../dist/*',
-      opt: { persistent: true, ignoreInitial: true },
-      actions: {
-        on: {
-          change: ({ compiler, compilation, watcher }, path) => {
-            uploadFileToRemote()
-          },
+      target: '../dist/*',
+      options: { ignoreInitial: false },
+      watch: {
+        add(watcher, path) {
+          // do something
         },
+        change(watcher, path) {
+          // do something
+        },
+        // ...
       },
     },
   ],
 })
 ```
 
-## 案例
+## Options
 
-[generated-plugin-taro-router-service](https://github.com/LuckyHH/generated-plugin-taro-router-service)。
+### Main Options
+
+| Option  | Type                                                  | Mapping                             | Meaning            |
+| ------- | ----------------------------------------------------- | ----------------------------------- | ------------------ |
+| options | [WatchOptions](https://github.com/paulmillr/chokidar) | chokidar.watch(target, **options**) | main watch options |
+| list    | ChokidarOption[]                                      |                                     | watch list         |
+
+### ChokidarOption
+
+| Option  | Type                                                  | Mapping                             | Meaning                           |
+| ------- | ----------------------------------------------------- | ----------------------------------- | --------------------------------- |
+| target  | string \| string[]                                    | chokidar.watch(**target**, options) | The file or dir you want to watch |
+| options | [WatchOptions](https://github.com/paulmillr/chokidar) | chokidar.watch(target, **options**) | watch options                     |
+| watch   | ChokidarWatchEvent                                    | chokidar.watch().on                 | watch().on callback               |
+
+### ChokidarWatchEvent
+
+| Option    | Type                                                                             | Mapping                                        |
+| --------- | -------------------------------------------------------------------------------- | ---------------------------------------------- |
+| ready     | (watcher: FSWatcher) => void                                                     | chokidar.watch().on('ready', **callback**)     |
+| add       | (watcher: FSWatcher, path: string, status?: Stats) => void                       | chokidar.watch().on('add', **callback**)       |
+| addDir    | (watcher: FSWatcher, path: string, status?: Stats) => void                       | chokidar.watch().on('addDir', **callback**)    |
+| change    | (watcher: FSWatcher, path: string, status?: Stats) => void                       | chokidar.watch().on('change', **callback**)    |
+| unlink    | (watcher: FSWatcher, path: string, status?: Stats) => void                       | chokidar.watch().on('unlink', **callback**)    |
+| unlinkDir | (watcher: FSWatcher, path: string, status?: Stats) => void                       | chokidar.watch().on('unlinkDir', **callback**) |
+| raw       | (watcher: FSWatcher, eventName: string, path: string, details: any) => void      | chokidar.watch().on('raw', **callback**)       |
+| all       | (watcher: FSWatcher, eventName: EventName, path: string, status?: Stats) => void | chokidar.watch().on('all', **callback**)       |
+| error     | (watcher: FSWatcher, e: Error) => void                                           | chokidar.watch().on('error', **callback**)     |

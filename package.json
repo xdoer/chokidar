@@ -1,70 +1,63 @@
 {
-  "version": "1.0.1",
+  "version": "0.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "description": "let webpack monitor changes in files that are not in the dependency graph.",
-  "keywords": [
-    "webpack",
-    "chokidar"
-  ],
-  "repository": "https://github.com/LuckyHH/webpack-plugin-chokidar",
+  "description": "This is based on paulmillr' chokidar project which make it easier to use",
   "files": [
     "dist"
   ],
   "engines": {
     "node": ">=10"
   },
+  "keywords": [
+    "chokidar"
+  ],
   "scripts": {
-    "start": "tsdx watch",
+    "start": "tsdx watch --verbose",
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why",
-    "format": "prettier --write \"src/*.ts\""
+    "analyze": "size-limit --why"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+  "publishConfig": {
+    "access": "public"
   },
-  "lint-staged": {
-    "*.ts": [
-      "prettier --parser=typescript --write"
-    ]
+  "name": "@xdoer/chokidar",
+  "author": "xdoer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdoer/chokidar.git"
   },
-  "prettier": {
-    "printWidth": 80,
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "arrowParens": "always"
+  "bugs": {
+    "url": "https://github.com/xdoer/chokidar/issues"
   },
-  "name": "webpack-plugin-chokidar",
-  "author": "Thomas Trainset",
-  "module": "dist/webpack-plugin-chokidar.esm.js",
+  "browserslist": [
+    "> 5%"
+  ],
+  "module": "dist/chokidar.esm.js",
   "size-limit": [
     {
-      "path": "dist/webpack-plugin-chokidar.cjs.production.min.js",
+      "path": "dist/chokidar.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/webpack-plugin-chokidar.esm.js",
+      "path": "dist/chokidar.esm.js",
       "limit": "10 KB"
     }
   ],
   "dependencies": {
-    "chokidar": "^3.5.1"
+    "chokidar": "^3.5.2"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.9.1",
-    "husky": "^4.3.6",
-    "size-limit": "^4.9.1",
+    "@size-limit/preset-small-lib": "^4.10.2",
+    "size-limit": "^4.10.2",
+    "ts-lib": "^0.0.5",
     "tsdx": "^0.14.1",
-    "tslib": "^2.0.3",
-    "typescript": "^4.1.3",
-    "lint-staged": "^10.5.3"
-  }
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
+  },
+  "gitHead": "cc76247b6910e3059e449f5927a43a3897396d7b"
 }

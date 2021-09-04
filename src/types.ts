@@ -1,40 +1,27 @@
 import { WatchOptions, FSWatcher } from 'chokidar'
 import { Stats } from 'fs'
 
-type eventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir'
-
-export interface Target {
-  compiler: any
-  compilation: any
-  watcher: FSWatcher
+export interface ChokidarOption {
+  target: string | ReadonlyArray<string>
+  watch: Partial<ChokidarWatchEvent>
+  options?: WatchOptions
 }
 
-export interface ChokidarPluginFileEvent {
-  ready(target: Target): void
-  add(target: Target, path: string, status?: Stats): void
-  addDir(target: Target, path: string, status?: Stats): void
-  change(target: Target, path: string, status?: Stats): void
-  unlink(target: Target, path: string, status?: Stats): void
-  unlinkDir(target: Target, path: string, status?: Stats): void
-  raw(target: Target, eventName: string, path: string, details: any): void
-  all(target: Target, eventName: eventName, path: string, status?: Stats): void
-  error(target: Target, e: Error): void
+type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir'
+
+export interface ChokidarWatchEvent {
+  ready(watcher: FSWatcher): void
+  add(watcher: FSWatcher, path: string, status?: Stats): void
+  addDir(watcher: FSWatcher, path: string, status?: Stats): void
+  change(watcher: FSWatcher, path: string, status?: Stats): void
+  unlink(watcher: FSWatcher, path: string, status?: Stats): void
+  unlinkDir(watcher: FSWatcher, path: string, status?: Stats): void
+  raw(watcher: FSWatcher, eventName: string, path: string, details: any): void
+  all(watcher: FSWatcher, eventName: EventName, path: string, status?: Stats): void
+  error(watcher: FSWatcher, e: Error): void
 }
 
-export interface ChokidarEvent {
-  on?: Partial<ChokidarPluginFileEvent>
-  close?: Promise<void>
-  add?(paths: string | ReadonlyArray<string>): void
-  unwatch?(paths: string | ReadonlyArray<string>): void
-  getWatched?(): { [directory: string]: string[] }
-}
-
-export interface ChokidarConfig {
-  file: string | ReadonlyArray<string>
-  opt: WatchOptions
-  actions: ChokidarEvent
-}
-
-export interface PluginOption {
-  chokidarConfigList: ChokidarConfig[]
+export interface Chokidar {
+  options?: WatchOptions
+  list: ChokidarOption[]
 }
