@@ -3,11 +3,13 @@ import { Stats } from 'fs'
 
 export interface ChokidarOption {
   target: string | ReadonlyArray<string>
-  watch: Partial<ChokidarWatchEvent>
+  watch: AtLeastOne<ChokidarWatchEvent>
   options?: WatchOptions
 }
 
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir'
+
+type AtLeastOne<T> = { [P in keyof T]: Pick<T, P> & Partial<Omit<T, P>> }[keyof T]
 
 export interface ChokidarWatchEvent {
   ready(watcher: FSWatcher): void
