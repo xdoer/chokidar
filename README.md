@@ -11,13 +11,26 @@ yarn add @xdoer/chokidar
 ## Example
 
 ```ts
-import chokidar, { ConfigChokidar } from '@xdoer/chokidar'
+import chokidar from '@xdoer/chokidar'
 
 chokidar({
   options: { persistent: true, ignoreInitial: true },
   list: [
     {
       target: '../dist/*',
+      options: { ignoreInitial: false },
+      watch: {
+        add(watcher, path) {
+          // do something
+        },
+        change(watcher, path) {
+          // do something
+        },
+        // ...
+      },
+    },
+    {
+      target: ['**/src/demo/**', '**/src/api/**'],
       options: { ignoreInitial: false },
       watch: {
         add(watcher, path) {

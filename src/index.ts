@@ -1,6 +1,8 @@
 import { FSWatcher, watch } from 'chokidar'
 import { Chokidar } from './types'
 
+export { ChokidarArgs, Chokidar } from './types'
+
 export default function (config: Chokidar): Promise<FSWatcher[]> {
   const { options: watchOptions, list } = config
 
